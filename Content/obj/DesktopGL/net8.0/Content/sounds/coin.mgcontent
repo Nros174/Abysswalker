@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <SourceFile>d:/Works/P3-2/Comgame/Final/Abysswalker/Abysswalker/Abysswalker/Content/sounds/coin.ogg</SourceFile>
+  <SourceTime>2025-03-12T04:21:42.3101106+07:00</SourceTime>
+  <DestFile>d:/Works/P3-2/Comgame/Final/Abysswalker/Abysswalker/Abysswalker/Content/bin/DesktopGL/Content/sounds/coin.xnb</DestFile>
+  <DestTime>2025-03-17T02:49:16.1468587+07:00</DestTime>
+  <Importer>OggImporter</Importer>
+  <ImporterTime>2024-08-17T00:05:56+07:00</ImporterTime>
+  <Processor>SongProcessor</Processor>
+  <ProcessorTime>2024-08-17T00:05:56+07:00</ProcessorTime>
+  <Parameters>
+    <Key>Quality</Key>
+    <Value>Best</Value>
+  </Parameters>
+  <Dependencies />
+  <BuildAsset />
+  <BuildOutput>
+    <string>d:/Works/P3-2/Comgame/Final/Abysswalker/Abysswalker/Abysswalker/Content/bin/DesktopGL/Content/sounds/coin.ogg</string>
+  </BuildOutput>
+</PipelineBuildEvent>

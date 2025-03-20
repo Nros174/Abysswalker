@@ -1,0 +1,119 @@
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Content;
+using System;
+using System.Collections.Generic;
+
+namespace Abysswalker
+{
+    public class Level
+    {
+        private Camera camera;
+        private Texture2D background;
+        private Texture2D midground;
+        private Player player;
+        private List<Enemy> enemies;
+        private List<Tile> tiles;
+        private List<Coin> coins;
+        private List<Decoration> decorations;
+        private List<Plant> plants;
+        private int levelWidth;
+        private int levelHeight;
+        private bool paused;
+        private bool generationDone;
+        private GameState status;
+
+        // ✅ เพิ่มตัวแปร Action ให้รองรับ 5 พารามิเตอร์
+        private Action<int, int> createOverworld;
+        private Action<int> changeCoins;
+        private Action<int> changeHealth;
+        private Action<int> checkGameOver;
+        private int currentLevel;
+
+        public Level(int currentLevel, Action<int, int> createOverworld, Action<int> changeCoins, Action<int> changeHealth, Action<int> checkGameOver)
+        {
+            this.currentLevel = currentLevel;
+            this.createOverworld = createOverworld;
+            this.changeCoins = changeCoins;
+            this.changeHealth = changeHealth;
+            this.checkGameOver = checkGameOver;
+
+            camera = new Camera(800, 600);
+            enemies = new List<Enemy>();
+            tiles = new List<Tile>();
+            coins = new List<Coin>();
+            decorations = new List<Decoration>();
+            plants = new List<Plant>();
+            paused = false;
+            generationDone = false;
+            status = GameState.Load;
+        }
+
+        public void LoadContent(ContentManager content)
+        {
+            background = content.Load<Texture2D>("background");
+            midground = content.Load<Texture2D>("midground");
+            player = new Player();
+            player.LoadContent(content);
+            // เพิ่มการโหลดไทล์, ศัตรู, และวัตถุต่าง ๆ ที่นี่
+        }
+
+        public void GenerateLevel()
+        {
+            if (!generationDone)
+            {
+                // **โหลดและตั้งค่าข้อมูลเลเวล**
+                // สามารถเพิ่มการโหลดไทล์, ศัตรู, และวัตถุต่าง ๆ ตรงนี้ได้
+                generationDone = true;
+                status = GameState.Game;
+            }
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            if (status == GameState.Load)
+            {
+                GenerateLevel();
+            }
+            else if (!paused && status == GameState.Game)
+            {
+                camera.Update(player.Position, levelWidth, levelHeight);
+                player.Update(gameTime);
+
+                foreach (var enemy in enemies)
+                    enemy.Update(gameTime);
+
+                foreach (var coin in coins)
+                    coin.Update(gameTime);
+
+                foreach (var plant in plants)
+                    plant.Update(gameTime);
+
+                // ✅ เช็ค Game Over ถ้าพลังชีวิตหมด
+                checkGameOver(currentLevel);
+            }
+        }
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Begin();
+            spriteBatch.Draw(background, Vector2.Zero, Color.White);
+            spriteBatch.Draw(midground, Vector2.Zero, Color.White);
+            player.Draw(spriteBatch);
+            foreach (var enemy in enemies)
+                enemy.Draw(spriteBatch);
+            foreach (var coin in coins)
+                coin.Draw(spriteBatch);
+            foreach (var decoration in decorations)
+                decoration.Draw(spriteBatch);
+            spriteBatch.End();
+        }
+    }
+
+    public enum GameState
+    {
+        Load,
+        Game,
+        Pause
+    }
+}
