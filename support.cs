@@ -53,9 +53,9 @@ namespace Abysswalker
         }
 
         // ฟังก์ชันสำหรับตัดกราฟิกจากภาพที่มีหลายส่วน (เช่น ไทล์) ให้เป็นส่วนเล็ก ๆ
-        public static List<Texture2D> ImportCutGraphics(ContentManager content, string path, int tileSize)
+        public static List<Texture2D> ImportCutGraphics(Game game, ContentManager content, string path, int tileSize)
         {
-            Texture2D surface = content.Load<Texture2D>(path); // โหลดภาพ
+            Texture2D surface = content.Load<Texture2D>(path);
             int tileNumX = surface.Width / tileSize;
             int tileNumY = surface.Height / tileSize;
             List<Texture2D> cutTiles = new List<Texture2D>();
@@ -65,17 +65,18 @@ namespace Abysswalker
                 for (int col = 0; col < tileNumX; col++)
                 {
                     Rectangle sourceRect = new Rectangle(col * tileSize, row * tileSize, tileSize, tileSize);
-                    Texture2D newSurf = new Texture2D(content.GraphicsDevice, tileSize, tileSize);
+                    Texture2D newSurf = new Texture2D(game.GraphicsDevice, tileSize, tileSize); // ใช้ game.GraphicsDevice
                     Color[] data = new Color[tileSize * tileSize];
 
                     surface.GetData(0, sourceRect, data, 0, data.Length);
                     newSurf.SetData(data);
 
-                    cutTiles.Add(newSurf); // เพิ่มกราฟิกที่ตัดใหม่ลงในลิสต์
+                    cutTiles.Add(newSurf);
                 }
             }
 
             return cutTiles;
         }
+
     }
 }

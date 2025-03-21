@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Abysswalker")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+953618f54bb287f930d5007f9525406126b5501d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+597b549c65d5e7deedd9099461194fda73b6ae29")]
 [assembly: System.Reflection.AssemblyProductAttribute("Abysswalker")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Abysswalker")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

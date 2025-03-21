@@ -53,8 +53,9 @@ namespace Abysswalker
             // เริ่มต้นการตั้งค่าภายในเกม
             base.Initialize();
             // สร้างเมนูหลักและส่งฟังก์ชันการสร้างฉากโลกภายนอก
-            mainMenu = new MainMenu(CreateOverworld);
-            ui = new UI(); // สร้าง UI
+            mainMenu = new MainMenu(CreateOverworld); // ส่ง CreateOverworld ฟังก์ชัน
+            ui = new UI(_spriteBatch); // ส่ง _spriteBatch
+
         }
 
         protected override void LoadContent()
@@ -146,7 +147,7 @@ namespace Abysswalker
             switch (currentState)
             {
                 case GameState.MainMenu:
-                    mainMenu.Draw(_spriteBatch); // วาดเมนูหลัก
+                   mainMenu.Draw(_spriteBatch); // ส่ง _spriteBatch // วาดเมนูหลัก
                     break;
                 case GameState.Overworld:
                     overworld.Draw(_spriteBatch); // วาดฉากโลกภายนอก

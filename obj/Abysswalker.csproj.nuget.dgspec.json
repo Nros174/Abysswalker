@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Works\\P3-2\\Comgame\\Final\\Abysswalker\\Abysswalker\\Abysswalker\\Abysswalker.csproj": {}
+    "d:\\Works\\P3-2\\Comgame\\Final\\Abysswalker\\Abysswalker\\Abysswalker\\Abysswalker.csproj": {}
   },
   "projects": {
-    "D:\\Works\\P3-2\\Comgame\\Final\\Abysswalker\\Abysswalker\\Abysswalker\\Abysswalker.csproj": {
+    "d:\\Works\\P3-2\\Comgame\\Final\\Abysswalker\\Abysswalker\\Abysswalker\\Abysswalker.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Works\\P3-2\\Comgame\\Final\\Abysswalker\\Abysswalker\\Abysswalker\\Abysswalker.csproj",
+        "projectUniqueName": "d:\\Works\\P3-2\\Comgame\\Final\\Abysswalker\\Abysswalker\\Abysswalker\\Abysswalker.csproj",
         "projectName": "Abysswalker",
-        "projectPath": "D:\\Works\\P3-2\\Comgame\\Final\\Abysswalker\\Abysswalker\\Abysswalker\\Abysswalker.csproj",
+        "projectPath": "d:\\Works\\P3-2\\Comgame\\Final\\Abysswalker\\Abysswalker\\Abysswalker\\Abysswalker.csproj",
         "packagesPath": "C:\\Users\\K.Nros\\.nuget\\packages\\",
-        "outputPath": "D:\\Works\\P3-2\\Comgame\\Final\\Abysswalker\\Abysswalker\\Abysswalker\\obj\\",
+        "outputPath": "d:\\Works\\P3-2\\Comgame\\Final\\Abysswalker\\Abysswalker\\Abysswalker\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\K.Nros\\AppData\\Roaming\\NuGet\\NuGet.Config"

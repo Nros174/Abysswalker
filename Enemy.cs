@@ -3,32 +3,30 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using System;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework.Input;
 
 namespace Abysswalker
 {
     public class Enemy : AnimatedTile
     {
         private bool isExplodes;
-        private bool playerCollide; // Player collision flag
-        private float speed;
+        private bool playerCollide;
+        public float speed;  // เปลี่ยนให้เป็น public เพื่อให้เข้าถึงได้
         private bool isReversed;
 
-        public Enemy(Game game, int size, int x, int y, string path) 
+        public Enemy(Game game, int size, int x, int y, string path)
             : base(game, size, x, y, path)
         {
-            this.rect.Y += size - this.image.Height; // Adjust Y position based on the image height
+            this.rect.Y += size - this.image.Height;
             this.speed = 1f;
             this.isExplodes = false;
             this.playerCollide = false;
             this.isReversed = false;
         }
 
-        // Explosion animation after destruction
         public void EnemyExplosion()
         {
-            this.frames = Support.ImportFolder(Game.Content, "enemy_explosion_images"); // Load explosion frames
-            this.frameIndex += 0.15f;
+            this.frames = Support.ImportFolder(Game.Content, "enemy_explosion_images");
+            this.frameIndex = (int)(this.frameIndex + 0.15f); // เพิ่มค่าและแปลงให้เป็น int
 
             if (this.frameIndex < this.frames.Count)
             {
@@ -40,22 +38,26 @@ namespace Abysswalker
             }
         }
 
-        // Move the enemy
         public void Move()
         {
-            this.rect.X -= (int)this.speed;
+            this.rect.X -= (int)this.speed;  // แปลง speed เป็น int
         }
 
-        // Flip the image based on movement direction
+        // คลาส Enemy
         public void ReverseImage()
         {
             if (this.speed > 0 && isReversed)
             {
-                this.image = Microsoft.Xna.Framework.Graphics.SpriteBatch.Draw(this.image, Vector2.Zero, null, Microsoft.Xna.Framework.Color.White, (float)Math.PI, Vector2.Zero, 1f, SpriteEffects.FlipHorizontally, 0);
+                // เรียกใช้ spriteBatch ที่ได้ถูกสร้างจาก Game
+                SpriteBatch spriteBatch = (SpriteBatch)Game.Services.GetService(typeof(SpriteBatch));
+
+                spriteBatch.Begin();
+                spriteBatch.Draw(this.image, Vector2.Zero, null, Color.White, (float)Math.PI, Vector2.Zero, 1f, SpriteEffects.FlipHorizontally, 0);
+                spriteBatch.End();
             }
         }
 
-        // Reverse enemy direction
+
         public void Reverse()
         {
             this.speed *= -1;
@@ -63,7 +65,7 @@ namespace Abysswalker
 
         public override void Update(GameTime gameTime)
         {
-            if (!isExplodes) // If explosion is not happening
+            if (!isExplodes)
             {
                 Animate();
                 Move();
@@ -75,14 +77,12 @@ namespace Abysswalker
             }
         }
 
-        // Kill the enemy (deactivate it)
         private void Kill()
         {
-            this.isExplodes = true; // Mark as exploded
+            this.isExplodes = true;
         }
     }
 
-    // DecorationFish doesn't interact with the player, it just moves randomly
     public class DecorationFish : Enemy
     {
         public DecorationFish(Game game, int size, int x, int y, string path, int minSpeed, int maxSpeed)
@@ -91,10 +91,9 @@ namespace Abysswalker
             this.speed = new Random().Next(minSpeed, maxSpeed);
         }
 
-        // Override Move method to use random speed
         public new void Move()
         {
-            this.rect.X -= (int)this.speed;
+            this.rect.X -= (int)this.speed; // ใช้ speed แบบสุ่ม
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Abysswalker
         private List<Texture2D> frames;
         private int frameIndex;
         private string status;
-        private Rectangle rect;
+        public Rectangle rect;
         private Rectangle detectionZone;
 
         public Node(Game game, Vector2 position, string status, float iconSpeed, string path) : base(game)
@@ -29,8 +29,6 @@ namespace Abysswalker
         {
             var frames = new List<Texture2D>();
             // สมมติว่าเรามีโค้ดในการโหลดภาพจาก path
-            // frames.Add(Game.Content.Load<Texture2D>(path + "/frame1"));
-            // frames.Add(Game.Content.Load<Texture2D>(path + "/frame2"));
             return frames;
         }
 
@@ -79,19 +77,29 @@ namespace Abysswalker
     public class Icon : DrawableGameComponent
     {
         private Texture2D image;
-        private Vector2 position;
+        public Vector2 position;  // ต้องใช้ Vector2 สำหรับตำแหน่ง
         private Rectangle rect;
+        private Vector2 moveDirection;  // ตัวแปรสำหรับทิศทางการเคลื่อนที่
+        private float speed;  // ความเร็ว
 
         public Icon(Game game, Vector2 position) : base(game)
         {
             this.position = position;
             image = Game.Content.Load<Texture2D>("overworld_icon_image"); // Load the icon image
             rect = new Rectangle((int)position.X, (int)position.Y, image.Width, image.Height);
+            moveDirection = Vector2.Zero;  // เริ่มต้นทิศทางเป็นศูนย์
+            speed = 8f;  // ความเร็วเริ่มต้น
         }
 
         public override void Update(GameTime gameTime)
         {
-            rect.Center = position.ToPoint();
+            // คำนวณตำแหน่ง rect ใหม่จาก position
+            rect.X = (int)(position.X - rect.Width / 2);
+            rect.Y = (int)(position.Y - rect.Height / 2);
+
+            // อัปเดตตำแหน่งของ icon ตาม moveDirection
+            position += moveDirection * speed; // เพิ่มตำแหน่งตามทิศทางการเคลื่อนที่และความเร็ว
+
             base.Update(gameTime);
         }
 
@@ -102,6 +110,11 @@ namespace Abysswalker
             spriteBatch.Draw(image, rect, Color.White);
             spriteBatch.End();
             base.Draw(gameTime);
+        }
+
+        public void SetMoveDirection(Vector2 direction)
+        {
+            moveDirection = direction;
         }
     }
 
@@ -117,7 +130,6 @@ namespace Abysswalker
         private int maxLevel;
         private bool moving;
         private Vector2 moveDirection;
-        private float speed;
         private bool levelLoading;
 
         public Overworld(Game game, int startLevel, int maxLevel) : base(game)
@@ -130,7 +142,6 @@ namespace Abysswalker
             this.currentLevel = startLevel;
             nodes = new List<Node>();
             icon = new Icon(game, Vector2.Zero);
-            speed = 8f;
             levelLoading = false;
 
             // Create nodes (level points) from level data
@@ -186,18 +197,34 @@ namespace Abysswalker
 
         private Vector2 GetMovementData(string target)
         {
-            Vector2 start = new Vector2(nodes[currentLevel].rect.Center.X, nodes[currentLevel].rect.Center.Y);
-            Vector2 end = (target == "next") ? new Vector2(nodes[currentLevel + 1].rect.Center.X, nodes[currentLevel + 1].rect.Center.Y)
-                                             : new Vector2(nodes[currentLevel - 1].rect.Center.X, nodes[currentLevel - 1].rect.Center.Y);
+            // คำนวณจุดกึ่งกลางของ rect สำหรับตำแหน่งเริ่มต้น (start)
+            Vector2 start = new Vector2(
+                nodes[currentLevel].rect.X + nodes[currentLevel].rect.Width / 2,
+                nodes[currentLevel].rect.Y + nodes[currentLevel].rect.Height / 2
+            );
 
-            return Vector2.Normalize(end - start);
+            // คำนวณจุดกึ่งกลางของ rect สำหรับตำแหน่งสิ้นสุด (end)
+            Vector2 end = (target == "next")
+                ? new Vector2(
+                    nodes[currentLevel + 1].rect.X + nodes[currentLevel + 1].rect.Width / 2,
+                    nodes[currentLevel + 1].rect.Y + nodes[currentLevel + 1].rect.Height / 2
+                )
+                : new Vector2(
+                    nodes[currentLevel - 1].rect.X + nodes[currentLevel - 1].rect.Width / 2,
+                    nodes[currentLevel - 1].rect.Y + nodes[currentLevel - 1].rect.Height / 2
+                );
+
+            return Vector2.Normalize(end - start); // คำนวณทิศทางระหว่างตำแหน่งเริ่มต้นและตำแหน่งสิ้นสุด
         }
+
 
         public void UpdateIconPosition()
         {
             if (moving && moveDirection != Vector2.Zero)
             {
-                icon.position += moveDirection * speed;
+                icon.SetMoveDirection(moveDirection);  // กำหนดทิศทางให้ icon
+                icon.position += moveDirection * 8f;  // อัปเดตตำแหน่งตามทิศทางและความเร็ว
+
                 Node targetNode = nodes[currentLevel];
                 if (targetNode.IsCollidingWith(icon.position))
                 {

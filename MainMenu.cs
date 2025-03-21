@@ -9,21 +9,19 @@ namespace Abysswalker
     // คลาสสำหรับสร้างปุ่ม
     public class Button : DrawableGameComponent
     {
-        private Texture2D buttonTexture;  // ตัวแปรเก็บภาพของปุ่ม
-        private Rectangle buttonRect;     // ตัวแปรเก็บข้อมูลขนาดและตำแหน่งของปุ่ม
-        private Vector2 position;         // ตำแหน่งของปุ่ม
-        private Vector2 size;             // ขนาดของปุ่ม
+        private Texture2D buttonTexture;
+        public Rectangle buttonRect; // เปลี่ยนให้เป็น public เพื่อให้เข้าถึงได้
+        private Vector2 position;
+        private Vector2 size;
 
-        // คอนสตรัคเตอร์ที่ใช้รับค่าในการสร้างปุ่ม
         public Button(Game game, string image, Vector2 position, Vector2 size) : base(game)
         {
             this.position = position;
             this.size = size;
-            this.buttonTexture = Game.Content.Load<Texture2D>(image); // โหลดภาพปุ่ม
-            this.buttonRect = new Rectangle((int)position.X, (int)position.Y, (int)size.X, (int)size.Y); // กำหนดตำแหน่งและขนาดของปุ่ม
+            this.buttonTexture = Game.Content.Load<Texture2D>(image);
+            this.buttonRect = new Rectangle((int)position.X, (int)position.Y, (int)size.X, (int)size.Y);
         }
 
-        // ฟังก์ชันอัพเดตปุ่มเมื่อมีการเคลื่อนที่ของเมาส์
         public void Update(GameTime gameTime, MouseState mouseState)
         {
             if (buttonRect.Contains(mouseState.Position))
@@ -32,18 +30,17 @@ namespace Abysswalker
             }
         }
 
-        // ฟังก์ชันในการวาดปุ่มลงบนหน้าจอ
         public override void Draw(GameTime gameTime)
         {
-            SpriteBatch spriteBatch = (SpriteBatch)Game.Services.GetService(typeof(SpriteBatch)); // ดึงข้อมูล SpriteBatch ที่ใช้ในการวาด
+            SpriteBatch spriteBatch = (SpriteBatch)Game.Services.GetService(typeof(SpriteBatch));
             spriteBatch.Begin();
-            spriteBatch.Draw(buttonTexture, buttonRect, Color.White); // วาดปุ่ม
+            spriteBatch.Draw(buttonTexture, buttonRect, Color.White);
             spriteBatch.End();
             base.Draw(gameTime);
         }
     }
 
-    // คลาสสำหรับการสร้างข้อความ
+    // คลาสสำหรับสร้างข้อความ
     public class Text : DrawableGameComponent
     {
         private SpriteFont font;  // ฟอนต์ที่ใช้ในการแสดงข้อความ
@@ -72,32 +69,27 @@ namespace Abysswalker
     }
 
     // คลาสสำหรับเมนูหลักของเกม
-    public class MainMenu : GameComponent
+    public class MainMenu : DrawableGameComponent // เปลี่ยนเป็น DrawableGameComponent
     {
-        private Button playButton;       // ปุ่มเล่น
-        private Button exitButton;       // ปุ่มออก
-        private Text titleText;          // ข้อความหัวเรื่อง
-        private Text subtitleText;       // ข้อความรอง
+        private Button playButton;
+        private Button exitButton;
+        private Text titleText;
+        private Text subtitleText;
+        private Song menuMusic;
 
-        private Song menuMusic;          // เพลงของเมนู
-
-        // คอนสตรัคเตอร์ที่ใช้ในการกำหนดค่าพื้นฐาน
         public MainMenu(Game game) : base(game)
         {
-            menuMusic = Game.Content.Load<Song>("menu_music"); // โหลดเพลงเมนู
-            MediaPlayer.Play(menuMusic);  // เริ่มเล่นเพลงเมนู
-            MediaPlayer.IsRepeating = true; // ให้เพลงเล่นซ้ำ
+            menuMusic = Game.Content.Load<Song>("menu_music");
+            MediaPlayer.Play(menuMusic);
+            MediaPlayer.IsRepeating = true;
 
-            // สร้างปุ่มเล่นและปุ่มออก
             playButton = new Button(game, "play_button_non_active", new Vector2(400, 300), new Vector2(400, 200));
             exitButton = new Button(game, "exit_button_non_active", new Vector2(400, 600), new Vector2(400, 200));
-
-            // สร้างข้อความหัวเรื่องและรอง
             titleText = new Text(game, "UNDERWATER", new Vector2(400, 100), 110, Color.Green);
             subtitleText = new Text(game, "ADVENTURE", new Vector2(400, 250), 110, Color.Green);
         }
+        
 
-        // ฟังก์ชันอัพเดตปุ่มและตรวจสอบการคลิก
         public override void Update(GameTime gameTime)
         {
             MouseState mouseState = Mouse.GetState(); // ดึงข้อมูลการเคลื่อนที่ของเมาส์
@@ -106,11 +98,11 @@ namespace Abysswalker
 
             if (mouseState.LeftButton == ButtonState.Pressed) // หากปุ่มเมาส์ซ้ายถูกคลิก
             {
-                if (playButton.Rectangle.Contains(mouseState.Position)) // หากคลิกปุ่มเล่น
+                if (playButton.buttonRect.Contains(mouseState.Position)) // หากคลิกปุ่มเล่น
                 {
                     // เริ่มเกม (สร้างฉากโลกหรือระดับ)
                 }
-                else if (exitButton.Rectangle.Contains(mouseState.Position)) // หากคลิกปุ่มออก
+                else if (exitButton.buttonRect.Contains(mouseState.Position)) // หากคลิกปุ่มออก
                 {
                     Game.Exit(); // ออกจากเกม
                 }
@@ -119,17 +111,14 @@ namespace Abysswalker
             base.Update(gameTime);
         }
 
-        // ฟังก์ชันวาดข้อความและปุ่มบนหน้าจอ
         public override void Draw(GameTime gameTime)
         {
             SpriteBatch spriteBatch = (SpriteBatch)Game.Services.GetService(typeof(SpriteBatch)); // ดึงข้อมูล SpriteBatch ที่ใช้ในการวาด
             spriteBatch.Begin();
-
             titleText.Draw(gameTime);    // วาดข้อความหัวเรื่อง
             subtitleText.Draw(gameTime); // วาดข้อความรอง
             playButton.Draw(gameTime);   // วาดปุ่มเล่น
             exitButton.Draw(gameTime);   // วาดปุ่มออก
-
             spriteBatch.End();
             base.Draw(gameTime);
         }

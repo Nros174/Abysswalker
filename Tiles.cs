@@ -104,7 +104,7 @@ namespace Abysswalker
     public class Decoration : DrawableGameComponent
     {
         private Texture2D image;
-        private Rectangle rect;
+        protected Rectangle rect;
 
         public Decoration(Game game, int x, int y, Texture2D surface) : base(game)
         {

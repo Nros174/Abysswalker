@@ -11,7 +11,7 @@ namespace Abysswalker
         private Camera camera;
         private Texture2D background;
         private Texture2D midground;
-        private Player player;
+        public Player player;
         private List<Enemy> enemies;
         private List<Tile> tiles;
         private List<Coin> coins;
@@ -23,12 +23,36 @@ namespace Abysswalker
         private bool generationDone;
         private GameState status;
 
-        // ✅ เพิ่มตัวแปร Action ให้รองรับ 5 พารามิเตอร์
         private Action<int, int> createOverworld;
         private Action<int> changeCoins;
         private Action<int> changeHealth;
         private Action<int> checkGameOver;
         private int currentLevel;
+
+        public class Camera
+        {
+            private Matrix _transform;
+            private Viewport _viewport;
+            private Vector2 _position;
+
+            public Camera(int width, int height)
+            {
+                _viewport = new Viewport(0, 0, width, height);
+                _position = Vector2.Zero;
+            }
+
+            public void Update(Vector2 playerPosition, int levelWidth, int levelHeight)
+            {
+                // คำนวณตำแหน่งของกล้อง
+                _position.X = MathHelper.Clamp(playerPosition.X, _viewport.Width / 2, levelWidth - _viewport.Width / 2);
+                _position.Y = MathHelper.Clamp(playerPosition.Y, _viewport.Height / 2, levelHeight - _viewport.Height / 2);
+
+                _transform = Matrix.CreateTranslation(new Vector3(-_position, 0));
+            }
+
+            public Matrix Transform => _transform;
+        }
+
 
         public Level(int currentLevel, Action<int, int> createOverworld, Action<int> changeCoins, Action<int> changeHealth, Action<int> checkGameOver)
         {
@@ -53,7 +77,7 @@ namespace Abysswalker
         {
             background = content.Load<Texture2D>("background");
             midground = content.Load<Texture2D>("midground");
-            player = new Player();
+            player = new Player(game, new Vector2(400, 300), spriteBatch, changeHealth);  // ตรวจสอบการส่งค่าถูกต้อง
             player.LoadContent(content);
             // เพิ่มการโหลดไทล์, ศัตรู, และวัตถุต่าง ๆ ที่นี่
         }
