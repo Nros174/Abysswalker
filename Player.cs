@@ -30,12 +30,7 @@ namespace Abysswalker
         private KeyboardState prevState;
         private int sprintCooldownTimer;
         private int sprintTimer;
-
-        // เพิ่มตัวแปร position เพื่อเก็บตำแหน่ง
-        private Vector2 position; // เพิ่มตัวแปร position ที่ใช้เก็บตำแหน่ง
-
-        // public Vector2 Position { get; set; }  // เพิ่มตำแหน่งให้กับ Player
-
+        private Vector2 position;
 
         public Player(Game game, Vector2 pos, SpriteBatch spriteBatch, Action<int> changeHealth)
             : base(game)
@@ -61,7 +56,7 @@ namespace Abysswalker
 
             this.importCharacterAssets();
             this.image = this.animations["idle"][frameIndex];
-            this.position = pos; // กำหนดตำแหน่งเริ่มต้นให้กับตัวละคร
+            this.position = pos;
         }
 
         public void importCharacterAssets()
@@ -70,7 +65,7 @@ namespace Abysswalker
             // You'll load actual images here using ContentManager in MonoGame
             this.animations = new Dictionary<string, List<Texture2D>>()
             {
-                { "idle", new List<Texture2D>() },
+                { "idle", new List<Texture2D>() }, 
                 { "default_swimming", new List<Texture2D>() },
                 { "fast_swimming", new List<Texture2D>() },
                 { "hurt", new List<Texture2D>() },
@@ -82,19 +77,18 @@ namespace Abysswalker
         public void animate()
         {
             List<Texture2D> animation = this.animations[this.status];
-            this.frameIndex += (int)this.animationSpeed; // แปลง animationSpeed เป็น int ก่อน
+            this.frameIndex += (int)animationSpeed;
             if (this.frameIndex >= animation.Count)
             {
                 this.frameIndex = 0;
             }
-            this.image = animation[this.frameIndex];
+            this.image = animation[(int)this.frameIndex];
 
             if (!this.racingRight)
             {
                 this.image = FlipImage(this.image); // Flip image horizontally if moving left
             }
         }
-
 
         private Texture2D FlipImage(Texture2D originalImage)
         {
