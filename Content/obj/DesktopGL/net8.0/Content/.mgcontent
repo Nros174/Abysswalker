@@ -4,7 +4,7 @@
   <Platform>DesktopGL</Platform>
   <Config />
   <SourceFiles>
-    <File>d:/Works/P3-2/Comgame/Final/Abysswalker/Abysswalker/Abysswalker/Content/graphics/terrain/terain_tile.png</File>
+    <File>A:/Comgame/Abysswalker/Content/graphics/terrain/terain_tile.png</File>
   </SourceFiles>
   <DestFiles>
     <File>terrain/terain_tile.png</File>

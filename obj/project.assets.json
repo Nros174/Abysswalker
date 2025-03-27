@@ -238,19 +238,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\K.Nros\\.nuget\\packages\\": {}
+    "C:\\Users\\yueij\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Works\\P3-2\\Comgame\\Final\\Abysswalker\\Abysswalker\\Abysswalker\\Abysswalker.csproj",
+      "projectUniqueName": "A:\\Comgame\\Abysswalker\\Abysswalker.csproj",
       "projectName": "Abysswalker",
-      "projectPath": "D:\\Works\\P3-2\\Comgame\\Final\\Abysswalker\\Abysswalker\\Abysswalker\\Abysswalker.csproj",
-      "packagesPath": "C:\\Users\\K.Nros\\.nuget\\packages\\",
-      "outputPath": "D:\\Works\\P3-2\\Comgame\\Final\\Abysswalker\\Abysswalker\\Abysswalker\\obj\\",
+      "projectPath": "A:\\Comgame\\Abysswalker\\Abysswalker.csproj",
+      "packagesPath": "C:\\Users\\yueij\\.nuget\\packages\\",
+      "outputPath": "A:\\Comgame\\Abysswalker\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\K.Nros\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\yueij\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -304,7 +304,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.405/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

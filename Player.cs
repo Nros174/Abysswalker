@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework.Content;  // เพิ่มบรรทัดนี้
 
 namespace Abysswalker
 {
@@ -31,6 +32,8 @@ namespace Abysswalker
         private int sprintCooldownTimer;
         private int sprintTimer;
         private Vector2 position;
+        public Vector2 Position { get; set; }  // เพิ่ม Position ให้เข้าถึงได้จากภายนอก
+
 
         public Player(Game game, Vector2 pos, SpriteBatch spriteBatch, Action<int> changeHealth)
             : base(game)
@@ -57,6 +60,8 @@ namespace Abysswalker
             this.importCharacterAssets();
             this.image = this.animations["idle"][frameIndex];
             this.position = pos;
+            this.Position = pos;
+
         }
 
         public void importCharacterAssets()
@@ -183,11 +188,19 @@ namespace Abysswalker
             // Implement additional update logic (e.g., movement, collision detection)
         }
 
-        public void Draw(GameTime gameTime)
+         public override void Draw(GameTime gameTime)  // ใช้ override แทน new
         {
-            this.spriteBatch.Begin();
-            this.spriteBatch.Draw(this.image, this.position, Color.White);
-            this.spriteBatch.End();
+            // วาด Player
+            spriteBatch.Begin();
+            spriteBatch.Draw(this.image, this.Position, Color.White);
+            spriteBatch.End();
+        }
+        public void LoadContent(ContentManager content)
+        {
+            // โหลดเนื้อหาของ Player ที่นี่
+            this.image = content.Load<Texture2D>("player_image");
         }
     }
+
+    
 }

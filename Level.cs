@@ -3,11 +3,15 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework.Content;  // เพิ่มบรรทัดนี้
+
 
 namespace Abysswalker
 {
     public class Level
     {
+        private Game game;
+        private SpriteBatch spriteBatch;
         private Camera camera;
         private Texture2D background;
         private Texture2D midground;
@@ -43,19 +47,18 @@ namespace Abysswalker
 
             public void Update(Vector2 playerPosition, int levelWidth, int levelHeight)
             {
-                // คำนวณตำแหน่งของกล้อง
                 _position.X = MathHelper.Clamp(playerPosition.X, _viewport.Width / 2, levelWidth - _viewport.Width / 2);
                 _position.Y = MathHelper.Clamp(playerPosition.Y, _viewport.Height / 2, levelHeight - _viewport.Height / 2);
-
                 _transform = Matrix.CreateTranslation(new Vector3(-_position, 0));
             }
 
             public Matrix Transform => _transform;
         }
 
-
-        public Level(int currentLevel, Action<int, int> createOverworld, Action<int> changeCoins, Action<int> changeHealth, Action<int> checkGameOver)
+        public Level(Game game, SpriteBatch spriteBatch, int currentLevel, Action<int, int> createOverworld, Action<int> changeCoins, Action<int> changeHealth, Action<int> checkGameOver)
         {
+            this.game = game;
+            this.spriteBatch = spriteBatch;
             this.currentLevel = currentLevel;
             this.createOverworld = createOverworld;
             this.changeCoins = changeCoins;
@@ -73,27 +76,25 @@ namespace Abysswalker
             status = GameState.Load;
         }
 
-        public void LoadContent(ContentManager content)
+        public void LoadLevelContent(ContentManager content)
         {
             background = content.Load<Texture2D>("background");
             midground = content.Load<Texture2D>("midground");
-            player = new Player(game, new Vector2(400, 300), spriteBatch, changeHealth);  // ตรวจสอบการส่งค่าถูกต้อง
-            player.LoadContent(content);
-            // เพิ่มการโหลดไทล์, ศัตรู, และวัตถุต่าง ๆ ที่นี่
+            player = new Player(game, new Vector2(400, 300), spriteBatch, changeHealth);  // สร้าง Player ใหม่
+            player.LoadContent(content);  // ใช้ LoadContent() ของ Player แทนการใช้ DrawableGameComponent
         }
+
 
         public void GenerateLevel()
         {
             if (!generationDone)
             {
-                // **โหลดและตั้งค่าข้อมูลเลเวล**
-                // สามารถเพิ่มการโหลดไทล์, ศัตรู, และวัตถุต่าง ๆ ตรงนี้ได้
                 generationDone = true;
                 status = GameState.Game;
             }
         }
 
-        public void Update(GameTime gameTime)
+       public void Update(GameTime gameTime)
         {
             if (status == GameState.Load)
             {
@@ -102,7 +103,7 @@ namespace Abysswalker
             else if (!paused && status == GameState.Game)
             {
                 camera.Update(player.Position, levelWidth, levelHeight);
-                player.Update(gameTime);
+                player.Update(gameTime);  // ส่ง gameTime ให้กับ player
 
                 foreach (var enemy in enemies)
                     enemy.Update(gameTime);
@@ -113,23 +114,22 @@ namespace Abysswalker
                 foreach (var plant in plants)
                     plant.Update(gameTime);
 
-                // ✅ เช็ค Game Over ถ้าพลังชีวิตหมด
                 checkGameOver(currentLevel);
             }
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(GameTime gameTime)
         {
             spriteBatch.Begin();
             spriteBatch.Draw(background, Vector2.Zero, Color.White);
             spriteBatch.Draw(midground, Vector2.Zero, Color.White);
-            player.Draw(spriteBatch);
+            player.Draw(gameTime);
             foreach (var enemy in enemies)
-                enemy.Draw(spriteBatch);
+                enemy.Draw(gameTime);
             foreach (var coin in coins)
-                coin.Draw(spriteBatch);
+                coin.Draw(gameTime);
             foreach (var decoration in decorations)
-                decoration.Draw(spriteBatch);
+                decoration.Draw(gameTime);
             spriteBatch.End();
         }
     }
