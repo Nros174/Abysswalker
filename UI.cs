@@ -82,5 +82,7 @@ namespace Abysswalker
             // สิ้นสุดการวาด
             spriteBatch.End();
         }
+
+        
     }
 }

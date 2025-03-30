@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Audio;
+using System;
 
 namespace Abysswalker
 {
@@ -77,8 +78,14 @@ namespace Abysswalker
         private Text subtitleText;
         private Song menuMusic;
 
-        public MainMenu(Game game) : base(game)
+        // 🔸 เพิ่ม callback สำหรับเริ่มเกม
+        private Action<int, int> createOverworldCallback;
+
+        // 🔸 ปรับ constructor ให้รับ callback
+        public MainMenu(Game game, Action<int, int> createOverworldCallback) : base(game)
         {
+            this.createOverworldCallback = createOverworldCallback;
+
             menuMusic = Game.Content.Load<Song>("menu_music");
             MediaPlayer.Play(menuMusic);
             MediaPlayer.IsRepeating = true;
@@ -88,23 +95,23 @@ namespace Abysswalker
             titleText = new Text(game, "UNDERWATER", new Vector2(400, 100), 110, Color.Green);
             subtitleText = new Text(game, "ADVENTURE", new Vector2(400, 250), 110, Color.Green);
         }
-        
+
 
         public override void Update(GameTime gameTime)
         {
-            MouseState mouseState = Mouse.GetState(); // ดึงข้อมูลการเคลื่อนที่ของเมาส์
-            playButton.Update(gameTime, mouseState);   // อัพเดตปุ่มเล่น
-            exitButton.Update(gameTime, mouseState);   // อัพเดตปุ่มออก
+            MouseState mouseState = Mouse.GetState();
+            playButton.Update(gameTime, mouseState);
+            exitButton.Update(gameTime, mouseState);
 
-            if (mouseState.LeftButton == ButtonState.Pressed) // หากปุ่มเมาส์ซ้ายถูกคลิก
+            if (mouseState.LeftButton == ButtonState.Pressed)
             {
-                if (playButton.buttonRect.Contains(mouseState.Position)) // หากคลิกปุ่มเล่น
+                if (playButton.buttonRect.Contains(mouseState.Position))
                 {
-                    // เริ่มเกม (สร้างฉากโลกหรือระดับ)
+                    createOverworldCallback?.Invoke(0, 1);
                 }
-                else if (exitButton.buttonRect.Contains(mouseState.Position)) // หากคลิกปุ่มออก
+                else if (exitButton.buttonRect.Contains(mouseState.Position))
                 {
-                    Game.Exit(); // ออกจากเกม
+                    Game.Exit();
                 }
             }
 
@@ -113,12 +120,12 @@ namespace Abysswalker
 
         public override void Draw(GameTime gameTime)
         {
-            SpriteBatch spriteBatch = (SpriteBatch)Game.Services.GetService(typeof(SpriteBatch)); // ดึงข้อมูล SpriteBatch ที่ใช้ในการวาด
+            SpriteBatch spriteBatch = (SpriteBatch)Game.Services.GetService(typeof(SpriteBatch));
             spriteBatch.Begin();
-            titleText.Draw(gameTime);    // วาดข้อความหัวเรื่อง
-            subtitleText.Draw(gameTime); // วาดข้อความรอง
-            playButton.Draw(gameTime);   // วาดปุ่มเล่น
-            exitButton.Draw(gameTime);   // วาดปุ่มออก
+            titleText.Draw(gameTime);
+            subtitleText.Draw(gameTime);
+            playButton.Draw(gameTime);
+            exitButton.Draw(gameTime);
             spriteBatch.End();
             base.Draw(gameTime);
         }

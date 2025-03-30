@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Media;
+using System;
 
 namespace Abysswalker
 {
@@ -132,7 +133,7 @@ namespace Abysswalker
         private Vector2 moveDirection;
         private bool levelLoading;
 
-        public Overworld(Game game, int startLevel, int maxLevel) : base(game)
+        public Overworld(Game game, int startLevel, int maxLevel, Action<int> createLevel) : base(game)
         {
             spriteBatch = new SpriteBatch(game.GraphicsDevice);
             background = Game.Content.Load<Texture2D>("background_image");

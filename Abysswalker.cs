@@ -53,7 +53,7 @@ namespace Abysswalker
             // เริ่มต้นการตั้งค่าภายในเกม
             base.Initialize();
             // สร้างเมนูหลักและส่งฟังก์ชันการสร้างฉากโลกภายนอก
-            mainMenu = new MainMenu(CreateOverworld); // ส่ง CreateOverworld ฟังก์ชัน
+            mainMenu = new MainMenu(this, CreateOverworld);  // ส่ง CreateOverworld ฟังก์ชัน
             ui = new UI(_spriteBatch); // ส่ง _spriteBatch
 
         }
@@ -71,7 +71,7 @@ namespace Abysswalker
             // เมื่อสร้างระดับใหม่ ให้กำหนดค่าสุขภาพและเปลี่ยนสถานะเกม
             currentHealth = maxHealth;
             currentState = GameState.Level;
-            level = new Level(currentLevel, CreateOverworld, ChangeCoins, ChangeHealth, CheckGameOver);
+            level = new Level(this, _spriteBatch, currentLevel, CreateOverworld, ChangeCoins, ChangeHealth, CheckGameOver);
         }
 
         private void CreateOverworld(int currentLevel, int newMaxLevel)
@@ -79,7 +79,7 @@ namespace Abysswalker
             // เมื่อสร้างฉากโลกภายนอก ให้ปรับระดับสูงสุดหากมีการเปลี่ยนแปลง
             if (newMaxLevel > maxLevel)
                 maxLevel = newMaxLevel;
-            overworld = new Overworld(currentLevel, maxLevel, CreateLevel);
+            overworld = new Overworld(this, currentLevel, maxLevel, CreateLevel);
             currentState = GameState.Overworld; // เปลี่ยนสถานะเป็นโลกภายนอก
             MediaPlayer.Stop(); // หยุดเพลงก่อนหน้า
             MediaPlayer.Play(overworldMusic); // เล่นเพลงฉากโลกภายนอก
@@ -106,7 +106,7 @@ namespace Abysswalker
                 // หากสุขภาพเป็นศูนย์ ให้รีเซ็ตค่าต่าง ๆ และเล่นเสียง
                 currentHealth = maxHealth;
                 coins = 0;
-                overworld = new Overworld(currentLevel, maxLevel, CreateLevel);
+                overworld = new Overworld(this, currentLevel, maxLevel, CreateLevel);
                 currentState = GameState.Overworld; // เปลี่ยนสถานะเป็นโลกภายนอก
                 deathSound.Play(); // เล่นเสียงเมื่อผู้เล่นตาย
                 MediaPlayer.Stop(); // หยุดเพลง
@@ -125,15 +125,15 @@ namespace Abysswalker
             switch (currentState)
             {
                 case GameState.MainMenu:
-                    mainMenu.Update(); // อัพเดตเมนูหลัก
+                    mainMenu.Update(gameTime); // อัพเดตเมนูหลัก
                     break;
                 case GameState.Overworld:
-                    overworld.Update(); // อัพเดตฉากโลกภายนอก
+                    overworld.Update(gameTime); // อัพเดตฉากโลกภายนอก
                     break;
                 case GameState.Level:
-                    level.Update(); // อัพเดตฉากระดับ
-                    ui.ShowHealth(_spriteBatch, currentHealth, maxHealth); // แสดงสุขภาพ
-                    ui.ShowCoins(_spriteBatch, coins); // แสดงเหรียญ
+                    level.Update(gameTime); // อัพเดตฉากระดับ
+                    ui.ShowHealth(currentHealth, maxHealth); // แสดงสุขภาพ
+                    ui.ShowCoins(coins); // แสดงเหรียญ
                     break;
             }
             base.Update(gameTime); // เรียกอัพเดตพื้นฐานจาก Game class
@@ -141,24 +141,28 @@ namespace Abysswalker
 
         protected override void Draw(GameTime gameTime)
         {
-            // ฟังก์ชันนี้จะถูกเรียกทุกครั้งที่ต้องการวาดเนื้อหาลงบนหน้าจอ
-            GraphicsDevice.Clear(Color.CornflowerBlue); // เคลียร์หน้าจอด้วยสีฟ้า
-            _spriteBatch.Begin(); // เริ่มต้นการวาด
+            GraphicsDevice.Clear(Color.CornflowerBlue);
+            _spriteBatch.Begin();
+
             switch (currentState)
             {
                 case GameState.MainMenu:
-                   mainMenu.Draw(_spriteBatch); // ส่ง _spriteBatch // วาดเมนูหลัก
+                    mainMenu.Draw(gameTime);
                     break;
                 case GameState.Overworld:
-                    overworld.Draw(_spriteBatch); // วาดฉากโลกภายนอก
+                    overworld.Draw(gameTime);
                     break;
                 case GameState.Level:
-                    level.Draw(_spriteBatch); // วาดฉากระดับ
-                    ui.Draw(_spriteBatch); // วาด UI
+                    level.Draw(gameTime);
+                    ui.ShowHealth(currentHealth, maxHealth);
+                    ui.ShowCoins(coins);
                     break;
+
             }
-            _spriteBatch.End(); // สิ้นสุดการวาด
-            base.Draw(gameTime); // เรียกการวาดพื้นฐานจาก Game class
+
+            _spriteBatch.End();
+            base.Draw(gameTime);
         }
+
     }
 }
