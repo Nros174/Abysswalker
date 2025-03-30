@@ -14,79 +14,74 @@ namespace Abysswalker
 
         public Tile(Game game, int size, int x, int y) : base(game)
         {
-            this.image = new Texture2D(game.GraphicsDevice, size, size); // สร้างพื้นผิวสำหรับ tile
-            this.rect = new Rectangle(x, y, size, size); // กำหนดตำแหน่งและขนาดของ rect
+            this.image = new Texture2D(game.GraphicsDevice, size, size);
+            this.rect = new Rectangle(x, y, size, size);
         }
 
         public override void Draw(GameTime gameTime)
         {
             SpriteBatch spriteBatch = (SpriteBatch)Game.Services.GetService(typeof(SpriteBatch));
             spriteBatch.Begin();
-            spriteBatch.Draw(image, rect, Color.White); // วาดพื้นผิว
+            spriteBatch.Draw(image, rect, Color.White);
             spriteBatch.End();
             base.Draw(gameTime);
         }
     }
 
-    // คลาสสำหรับ StaticTile (Tile ที่ไม่เคลื่อนไหว)
     public class StaticTile : Tile
     {
         public StaticTile(Game game, int size, int x, int y, Texture2D surface) : base(game, size, x, y)
         {
-            this.image = surface; // กำหนดภาพจาก surface ที่ให้มา
+            this.image = surface;
         }
     }
 
-    // คลาส Submarine ที่ปรับเปลี่ยนตำแหน่ง rect
     public class Submarine : StaticTile
     {
         public Submarine(Game game, int size, int x, int y, Texture2D surface) : base(game, size, x, y, surface)
         {
-            this.rect = new Rectangle(x - size / 2, y - size / 2, size, size); // ปรับตำแหน่งให้ตรงกลาง
+            this.rect = new Rectangle(x - size / 2, y - size / 2, size, size);
         }
     }
 
-    // คลาสสำหรับ AnimatedTile (Tile ที่เคลื่อนไหว)
     public class AnimatedTile : Tile
     {
-        protected List<Texture2D> frames; // รายการของภาพ
-        protected int frameIndex;
+        protected List<Texture2D> frames;
+        protected float frameIndex; // แก้จาก int เป็น float เพื่อให้ animation ลื่น
 
         public AnimatedTile(Game game, int size, int x, int y, string path) : base(game, size, x, y)
         {
-            frames = LoadFrames(path); // โหลดภาพจาก folder
-            frameIndex = 0;
-            this.image = frames[frameIndex];
+            frames = LoadFrames(path);
+            frameIndex = 0f;
+            this.image = frames.Count > 0 ? frames[0] : null;
         }
 
-        // ฟังก์ชันสำหรับโหลดภาพจาก folder (สามารถใช้ ContentManager ใน MonoGame)
         private List<Texture2D> LoadFrames(string path)
         {
             var frames = new List<Texture2D>();
-            // สมมติว่าคุณมีโค้ดเพื่อโหลดภาพจากโฟลเดอร์
-            // frames.Add(game.Content.Load<Texture2D>(path + "/frame1"));
-            // frames.Add(game.Content.Load<Texture2D>(path + "/frame2"));
-            // ...
+            // TODO: เติมโค้ดโหลดภาพจริง ๆ เช่น:
+            // frames.Add(Game.Content.Load<Texture2D>(path + "/frame1"));
             return frames;
         }
 
-        // ฟังก์ชันสำหรับทำให้ภาพเคลื่อนไหว
-        public void Animate()
+        public virtual void Animate()
         {
-            frameIndex += 1;
-            if (frameIndex >= frames.Count)
-                frameIndex = 0;
-            this.image = frames[frameIndex];
+            frameIndex += 0.15f;
+            if (frames.Count > 0)
+            {
+                if (frameIndex >= frames.Count)
+                    frameIndex = 0f;
+                this.image = frames[(int)frameIndex];
+            }
         }
 
         public override void Update(GameTime gameTime)
         {
-            Animate(); // เรียกฟังก์ชัน Animate
+            Animate();
             base.Update(gameTime);
         }
     }
 
-    // คลาสสำหรับ Coin (เหรียญ) ที่มีการปรับ rect และจัดการค่า
     public class Coin : AnimatedTile
     {
         public int Value { get; set; }
@@ -95,12 +90,11 @@ namespace Abysswalker
         {
             int centerX = x + size / 2;
             int centerY = y + size / 2;
-            this.rect = new Rectangle(centerX - size / 2, centerY - size / 2, size, size); // จัดตำแหน่งใหม่ให้ตรงกลาง
+            this.rect = new Rectangle(centerX - size / 2, centerY - size / 2, size, size);
             this.Value = value;
         }
     }
 
-    // คลาสสำหรับ Decoration (ตกแต่ง) ซึ่งใช้ภาพจากไฟล์และตำแหน่ง
     public class Decoration : DrawableGameComponent
     {
         private Texture2D image;
@@ -109,20 +103,19 @@ namespace Abysswalker
         public Decoration(Game game, int x, int y, Texture2D surface) : base(game)
         {
             this.image = surface;
-            this.rect = new Rectangle(x, y, image.Width, image.Height); // ตั้งตำแหน่งและขนาดตามภาพ
+            this.rect = new Rectangle(x, y, image.Width, image.Height);
         }
 
         public override void Draw(GameTime gameTime)
         {
             SpriteBatch spriteBatch = (SpriteBatch)Game.Services.GetService(typeof(SpriteBatch));
             spriteBatch.Begin();
-            spriteBatch.Draw(image, rect, Color.White); // วาดภาพ
+            spriteBatch.Draw(image, rect, Color.White);
             spriteBatch.End();
             base.Draw(gameTime);
         }
     }
 
-    // คลาส AnimatedPlant ที่มีการเคลื่อนไหว
     public class AnimatedPlant : AnimatedTile
     {
         private int yOffsetFactor;
@@ -131,12 +124,11 @@ namespace Abysswalker
         {
             this.yOffsetFactor = yOffsetFactor;
             int centerX = x + size / 2;
-            int centerY = y + size / yOffsetFactor; // ปรับตำแหน่ง Y
-            this.rect = new Rectangle(centerX - size / 2, centerY - size / 2, size, size); // จัดตำแหน่งให้ตรงกลาง
+            int centerY = y + size / yOffsetFactor;
+            this.rect = new Rectangle(centerX - size / 2, centerY - size / 2, size, size);
         }
     }
 
-    // คลาสสำหรับ Plant (พืช) ที่ไม่เคลื่อนไหว
     public class Plant : Decoration
     {
         private int yOffsetFactor;
@@ -145,8 +137,8 @@ namespace Abysswalker
         {
             this.yOffsetFactor = yOffsetFactor;
             int centerX = x + size / 2;
-            int centerY = y + size / yOffsetFactor; // ปรับตำแหน่ง Y
-            this.rect = new Rectangle(centerX - surface.Width / 2, centerY - surface.Height / 2, surface.Width, surface.Height); // จัดตำแหน่งให้ตรงกลาง
+            int centerY = y + size / yOffsetFactor;
+            this.rect = new Rectangle(centerX - surface.Width / 2, centerY - surface.Height / 2, surface.Width, surface.Height);
         }
     }
-}
+} 

@@ -1,98 +1,119 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
 using System;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework.Input;
 
 namespace Abysswalker
 {
     public class Enemy : AnimatedTile
     {
         private bool isExplodes;
-        private bool playerCollide; // Player collision flag
+        private bool playerCollide; // ใช้ตรวจสอบการชนกับผู้เล่น
         protected float speed;
         private bool isReversed;
+        protected SpriteEffects spriteEffect = SpriteEffects.None; // ใช้สำหรับ Flip รูปภาพ
 
-        public Enemy(Game game, int size, int x, int y, string path) 
+        public Enemy(Game game, int size, int x, int y, string path)
             : base(game, size, x, y, path)
         {
-            this.rect.Y += size - this.image.Height; // Adjust Y position based on the image height
+            this.rect.Y += size - this.image.Height; // ปรับตำแหน่ง Y ให้รูปอยู่บนพื้น
             this.speed = 1f;
             this.isExplodes = false;
             this.playerCollide = false;
             this.isReversed = false;
         }
 
-        // Explosion animation after destruction
+        // เรียกเมื่อศัตรูถูกทำลาย เพื่อแสดงอนิเมชันระเบิด
         public void EnemyExplosion()
         {
-            this.frames = Support.ImportFolder(Game.Content, "enemy_explosion_images"); // Load explosion frames
-            this.frameIndex += 0.15f;
+            this.frames = Support.ImportFolder(Game.Content, "enemy_explosion_images"); // โหลดภาพระเบิด
+            frameIndex += 0.15f; // เพิ่ม index แบบลื่นไหล
 
             if (this.frameIndex < this.frames.Count)
             {
-                this.image = this.frames[(int)this.frameIndex];
+                this.image = this.frames[(int)this.frameIndex]; // แสดงภาพที่ตรงกับ index
             }
             else
             {
-                this.Kill();
+                this.Kill(); // จบการระเบิด
             }
         }
 
-        // Move the enemy
-        public void Move()
+        // เคลื่อนที่ศัตรูไปทางซ้าย
+        public virtual void Move()
         {
             this.rect.X -= (int)this.speed;
         }
 
-        // Flip the image based on movement direction
+        // ตั้งค่าการ Flip รูปภาพตามทิศการเคลื่อนที่
         public void ReverseImage()
         {
             if (this.speed > 0 && isReversed)
             {
-                this.image = Microsoft.Xna.Framework.Graphics.SpriteBatch.Draw(this.image, Vector2.Zero, null, Microsoft.Xna.Framework.Color.White, (float)Math.PI, Vector2.Zero, 1f, SpriteEffects.FlipHorizontally, 0);
+                this.spriteEffect = SpriteEffects.FlipHorizontally;
+            }
+            else
+            {
+                this.spriteEffect = SpriteEffects.None;
             }
         }
 
-        // Reverse enemy direction
+        // เปลี่ยนทิศการเคลื่อนที่
         public void Reverse()
         {
             this.speed *= -1;
+            this.isReversed = !this.isReversed;
         }
 
         public override void Update(GameTime gameTime)
         {
-            if (!isExplodes) // If explosion is not happening
+            if (!isExplodes)
             {
-                Animate();
-                Move();
-                ReverseImage();
+                Animate(); // เรียกอนิเมชันปกติ
+                Move(); // เคลื่อนที่
+                ReverseImage(); // อัปเดตสถานะการกลับภาพ
             }
             else
             {
-                EnemyExplosion();
+                EnemyExplosion(); // แสดงภาพระเบิดเมื่อศัตรูตาย
             }
         }
 
-        // Kill the enemy (deactivate it)
+        // ปิดการทำงานของศัตรู
         private void Kill()
         {
-            this.isExplodes = true; // Mark as exploded
+            this.Visible = false; // หรือสามารถลบออกจากเกมได้ภายหลัง
+            this.Enabled = false;
         }
+
+        // ฟังก์ชันสำหรับวาดศัตรู
+        public override void Draw(GameTime gameTime)
+        {
+            SpriteBatch spriteBatch = (SpriteBatch)Game.Services.GetService(typeof(SpriteBatch));
+            if (this.Visible)
+            {
+                spriteBatch.Begin();
+                spriteBatch.Draw(this.image, rect, null, Color.White, 0f, Vector2.Zero, this.spriteEffect, 0f);
+                spriteBatch.End();
+            }
+        }
+
     }
 
-    // DecorationFish doesn't interact with the player, it just moves randomly
+    // ปลาตกแต่งที่ว่ายไปมาแบบสุ่ม ไม่ชนผู้เล่น
     public class DecorationFish : Enemy
     {
         public DecorationFish(Game game, int size, int x, int y, string path, int minSpeed, int maxSpeed)
             : base(game, size, x, y, path)
         {
-            this.speed = new Random().Next(minSpeed, maxSpeed);
+            Random rand = new Random();
+            this.speed = rand.Next(minSpeed, maxSpeed); // สุ่มความเร็ว
         }
 
-        // Override Move method to use random speed
-        public new void Move()
+        // เขียน Move ใหม่ให้เร็วแบบสุ่ม
+        public override void Move()
         {
             this.rect.X -= (int)this.speed;
         }

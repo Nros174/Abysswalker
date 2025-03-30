@@ -1,3 +1,6 @@
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+
 public class CutScene
 {
     // อาร์เรย์ของรูปภาพที่จะใช้แสดงในฉาก cutscene
